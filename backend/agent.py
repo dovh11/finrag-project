@@ -10,12 +10,18 @@ from retriever import retrieve_financial_context
 
 load_dotenv()
 
-# Initialize the LLM via Groq
-llm = ChatGroq(
-    temperature=0,
-    model_name="llama-3.3-70b-versatile",
-    api_key=os.getenv("GROQ_API_KEY"),
-)
+# Lazy initialization for LLM to bind to the correct event loop at runtime
+_llm = None
+
+def get_llm():
+    global _llm
+    if _llm is None:
+        _llm = ChatGroq(
+            temperature=0,
+            model_name="llama-3.3-70b-versatile",
+            api_key=os.getenv("GROQ_API_KEY"),
+        )
+    return _llm
 
 
 # Define the graph state
@@ -49,7 +55,7 @@ def generate_node(state: GraphState) -> dict:
         HumanMessage(content=state["query"]),
     ]
 
-    result = llm.invoke(messages)
+    result = get_llm().invoke(messages)
     return {"response": result.content}
 
 

@@ -12,26 +12,32 @@ from llama_index.core import Settings, VectorStoreIndex
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from llama_index.embeddings.huggingface_api import HuggingFaceInferenceAPIEmbedding
 
-# Configure the embedding model globally using HF Inference API to save RAM
-Settings.embed_model = HuggingFaceInferenceAPIEmbedding(
-    model_name="BAAI/bge-m3",
-    token=os.getenv("HF_TOKEN")
-)
+_index = None
 
-# Connect to Qdrant Cloud
-qdrant_client = QdrantClient(
-    url=os.getenv("QDRANT_URL"),
-    api_key=os.getenv("QDRANT_API_KEY"),
-)
+def get_index():
+    global _index
+    if _index is None:
+        # Configure the embedding model globally using HF Inference API
+        Settings.embed_model = HuggingFaceInferenceAPIEmbedding(
+            model_name="BAAI/bge-m3",
+            token=os.getenv("HF_TOKEN")
+        )
 
-# Initialize the vector store and index
-vector_store = QdrantVectorStore(
-    client=qdrant_client,
-    collection_name="finrag_fpt",
-    enable_hybrid=False,
-    fastembed_sparse_model=None,
-)
-index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
+        # Connect to Qdrant Cloud
+        qdrant_client = QdrantClient(
+            url=os.getenv("QDRANT_URL"),
+            api_key=os.getenv("QDRANT_API_KEY"),
+        )
+
+        # Initialize the vector store and index
+        vector_store = QdrantVectorStore(
+            client=qdrant_client,
+            collection_name="finrag_fpt",
+            enable_hybrid=False,
+            fastembed_sparse_model=None,
+        )
+        _index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
+    return _index
 
 
 def retrieve_financial_context(query: str) -> str:
@@ -43,7 +49,7 @@ def retrieve_financial_context(query: str) -> str:
     Returns:
         A single string of the top 5 retrieved nodes, concatenated with separators.
     """
-    retriever = index.as_retriever(similarity_top_k=5)
+    retriever = get_index().as_retriever(similarity_top_k=5)
     nodes = retriever.retrieve(query)
     context = "\n\n---\n\n".join([node.get_content() for node in nodes])
     return context
