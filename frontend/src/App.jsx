@@ -190,6 +190,12 @@ export default function App() {
   const [currentSessionId, setCurrentSessionId] = useState(() => {
     return localStorage.getItem('finrag-current-session') || null;
   });
+  
+  // Use a ref to track the session ID synchronously inside closures
+  const currentSessionIdRef = useRef(currentSessionId);
+  useEffect(() => {
+    currentSessionIdRef.current = currentSessionId;
+  }, [currentSessionId]);
 
   // Sync messages when current session changes
   useEffect(() => {
@@ -237,13 +243,14 @@ export default function App() {
 
     setChatSessions(prev => {
       let updated = [...prev];
-      if (!currentSessionId) {
+      if (!currentSessionIdRef.current) {
         const newId = generateId();
         const title = newMessages[0].content.slice(0, 30) + (newMessages[0].content.length > 30 ? '...' : '');
         updated.unshift({ id: newId, title, messages: newMessages });
         setCurrentSessionId(newId);
+        currentSessionIdRef.current = newId; // Update ref immediately
       } else {
-        const index = updated.findIndex(s => s.id === currentSessionId);
+        const index = updated.findIndex(s => s.id === currentSessionIdRef.current);
         if (index !== -1) {
           updated[index].messages = newMessages;
         }
@@ -255,6 +262,7 @@ export default function App() {
 
   const createNewChat = () => {
     setCurrentSessionId(null);
+    currentSessionIdRef.current = null;
     if (window.innerWidth < 1024) setIsSidebarOpen(false); // Close sidebar on mobile
   };
 
@@ -263,8 +271,9 @@ export default function App() {
     const updated = chatSessions.filter(s => s.id !== id);
     setChatSessions(updated);
     localStorage.setItem('finrag-sessions', JSON.stringify(updated));
-    if (currentSessionId === id) {
+    if (currentSessionIdRef.current === id) {
       setCurrentSessionId(null);
+      currentSessionIdRef.current = null;
     }
   };
 
