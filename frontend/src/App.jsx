@@ -179,7 +179,10 @@ export default function App() {
   const inputRef = useRef(null);
 
   // Layout state
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    if (typeof window !== 'undefined') return window.innerWidth >= 1024;
+    return false;
+  });
 
   // Chat memory state
   const [chatSessions, setChatSessions] = useState(() => {
@@ -245,7 +248,8 @@ export default function App() {
       let updated = [...prev];
       if (!currentSessionIdRef.current) {
         const newId = generateId();
-        const title = newMessages[0].content.slice(0, 30) + (newMessages[0].content.length > 30 ? '...' : '');
+        // Save full title up to 100 chars, let CSS `truncate` handle the display
+        const title = newMessages[0].content.slice(0, 100);
         updated.unshift({ id: newId, title, messages: newMessages });
         setCurrentSessionId(newId);
         currentSessionIdRef.current = newId; // Update ref immediately
@@ -332,8 +336,10 @@ export default function App() {
 
       {/* ── Sidebar ── */}
       <aside 
-        className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-slate-50 dark:bg-surface-800 border-r border-slate-200 dark:border-white/[0.06] flex flex-col transition-transform duration-300 ease-in-out ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        className={`fixed lg:static inset-y-0 left-0 z-40 flex flex-col bg-slate-50 dark:bg-surface-800 transition-all duration-300 ease-in-out ${
+          isSidebarOpen 
+            ? 'w-64 translate-x-0 border-r border-slate-200 dark:border-white/[0.06]' 
+            : 'w-64 -translate-x-full lg:w-0 lg:border-none lg:opacity-0 lg:overflow-hidden'
         }`}
       >
         <div className="p-4 flex items-center justify-between">
@@ -400,12 +406,13 @@ export default function App() {
         <header className="flex-shrink-0 h-14 border-b border-slate-200 dark:border-white/[0.06] bg-white/80 dark:bg-surface-900/80 backdrop-blur-xl flex items-center px-4 justify-between sticky top-0 z-20">
           <div className="flex items-center gap-3">
             <button 
-              onClick={() => setIsSidebarOpen(true)}
-              className="lg:hidden p-1.5 -ml-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-800 rounded-lg transition-colors"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="p-1.5 -ml-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-800 rounded-lg transition-colors"
+              title="Toggle Sidebar"
             >
               <Menu size={20} />
             </button>
-            <span className="text-sm font-medium text-slate-600 dark:text-slate-300 hidden sm:block">
+            <span className="text-sm font-medium text-slate-600 dark:text-slate-300 hidden sm:block truncate max-w-sm lg:max-w-xl">
               {chatSessions.find(s => s.id === currentSessionId)?.title || 'New Analysis'}
             </span>
           </div>
