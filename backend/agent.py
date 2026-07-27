@@ -10,18 +10,12 @@ from retriever import retrieve_financial_context
 
 load_dotenv()
 
-# Lazy initialization for LLM to bind to the correct event loop at runtime
-_llm = None
-
 def get_llm():
-    global _llm
-    if _llm is None:
-        _llm = ChatGroq(
-            temperature=0,
-            model_name="llama-3.3-70b-versatile",
-            api_key=os.getenv("GROQ_API_KEY"),
-        )
-    return _llm
+    return ChatGroq(
+        temperature=0,
+        model_name="llama-3.3-70b-versatile",
+        api_key=os.getenv("GROQ_API_KEY"),
+    )
 
 
 # Define the graph state

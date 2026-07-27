@@ -12,32 +12,27 @@ from llama_index.core import Settings, VectorStoreIndex
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from llama_index.embeddings.huggingface_api import HuggingFaceInferenceAPIEmbedding
 
-_index = None
-
 def get_index():
-    global _index
-    if _index is None:
-        # Configure the embedding model globally using HF Inference API
-        Settings.embed_model = HuggingFaceInferenceAPIEmbedding(
-            model_name="BAAI/bge-m3",
-            token=os.getenv("HF_TOKEN")
-        )
+    # Configure the embedding model globally using HF Inference API
+    Settings.embed_model = HuggingFaceInferenceAPIEmbedding(
+        model_name="BAAI/bge-m3",
+        token=os.getenv("HF_TOKEN")
+    )
 
-        # Connect to Qdrant Cloud
-        qdrant_client = QdrantClient(
-            url=os.getenv("QDRANT_URL"),
-            api_key=os.getenv("QDRANT_API_KEY"),
-        )
+    # Connect to Qdrant Cloud
+    qdrant_client = QdrantClient(
+        url=os.getenv("QDRANT_URL"),
+        api_key=os.getenv("QDRANT_API_KEY"),
+    )
 
-        # Initialize the vector store and index
-        vector_store = QdrantVectorStore(
-            client=qdrant_client,
-            collection_name="finrag_fpt",
-            enable_hybrid=False,
-            fastembed_sparse_model=None,
-        )
-        _index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
-    return _index
+    # Initialize the vector store and index
+    vector_store = QdrantVectorStore(
+        client=qdrant_client,
+        collection_name="finrag_fpt",
+        enable_hybrid=False,
+        fastembed_sparse_model=None,
+    )
+    return VectorStoreIndex.from_vector_store(vector_store=vector_store)
 
 
 def retrieve_financial_context(query: str) -> str:
