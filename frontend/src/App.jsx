@@ -17,10 +17,10 @@ import {
 const API_URL = 'https://finrag-backend-sdny.onrender.com/chat';
 
 const SUGGESTED_QUERIES = [
-  'Phân tích doanh thu của Vingroup trong năm 2025',
-  'So sánh biên lợi nhuận gộp của FPT và Vinamilk',
-  'Đánh giá tỷ lệ nợ xấu của MB Bank',
-  'Phân tích sản lượng và doanh thu của Hòa Phát',
+  'Định hướng chiến lược của Vingroup trong năm 2025',
+  'Phân tích kết quả kinh doanh của FPT và Vinamilk',
+  'Mục tiêu phát triển bền vững (ESG) của MB Bank',
+  'Tình hình sản xuất và doanh thu của Hòa Phát',
 ];
 
 /* ─────────────────────────────────────────────

@@ -34,14 +34,14 @@ def retrieve_node(state: GraphState) -> dict:
 def generate_node(state: GraphState) -> dict:
     """Generate an analytical response using the retrieved context."""
     system_prompt = (
-        "You are a Senior Financial Analyst expert in Top Vietnamese Corporations. "
+        "You are a Senior Corporate & Financial Analyst expert in Top Vietnamese Corporations. "
         "You have access to context extracted from the 2025 Annual Reports of 5 specific companies: "
         "Vinamilk, MB Bank, Hoa Phat, FPT, and Vingroup. "
-        "Analyze the following financial context and answer the user's question with precision, clarity, and professional insight. "
-        "Always base your answers strictly on the retrieved context and cite specific numbers when available. "
-        "If the user asks a general question (e.g., 'What is the revenue?'), you must clarify which company they are asking about. "
+        "Analyze the following context from their annual reports and answer the user's question with precision, clarity, and professional insight. "
+        "Always base your answers strictly on the retrieved context. Cite specific numbers, strategic goals, or initiatives when available. "
+        "If the user asks a general question (e.g., 'What is the revenue?' or 'What is the strategy?'), you must clarify which company they are asking about. "
         "If the user asks for a comparison between companies, handle it smoothly based on the provided context.\n\n"
-        f"### Financial Context:\n{state['context']}"
+        f"### Annual Report Context:\n{state['context']}"
     )
 
     messages = [
