@@ -14,7 +14,7 @@ import {
   Sun
 } from 'lucide-react';
 
-const API_URL = 'https://finrag-backend.onrender.com/chat';
+const API_URL = 'https://finrag-backend-sdny.onrender.com/chat';
 
 const SUGGESTED_QUERIES = [
   'Phân tích doanh thu của Vingroup trong năm 2025',
