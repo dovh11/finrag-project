@@ -35,9 +35,11 @@ The system currently hosts the complete annual reports of the following major co
 | **Complex Table Parsing** | Utilizes **LlamaParse** to accurately extract and preserve complex financial tables from raw PDF reports. |
 | **Agentic State Orchestration** | Employs **LangGraph** for intelligent routing, ensuring robust state management between retrieval and generation. |
 | **High-Performance Retrieval** | Uses **Qdrant Cloud** for blazing-fast vector similarity search, enabling instantaneous context fetching. |
+| **Contextual Memory** | Maintains conversational state by passing `chat_history` to the backend, enabling fluid multi-turn dialogue. |
+| **Interactive Citations** | Automatically extracts and renders source document names as beautiful, hoverable UI badges to prevent AI hallucinations. |
 | **Rapid AI Inference** | Powered by the highly capable **Llama-3.3-70B-Versatile** model via **Groq's** ultra-fast API architecture. |
 | **Memory-Optimized Deployment** | HuggingFace Inference API completely eliminates local PyTorch overhead, running easily within 512MB RAM constraints on Render. |
-| **Sleek, Responsive UI** | Modern frontend built with **React** and **Tailwind CSS**, featuring dark mode, system theme detection, and rich markdown rendering. |
+| **Sleek ChatGPT-Style UI** | Modern frontend built with **React** and **Tailwind CSS**, featuring a collapsible chat session sidebar, dark mode, and rich markdown. |
 
 ---
 
@@ -48,10 +50,10 @@ The system relies on a decoupled frontend and backend, using LangGraph to orches
 ```mermaid
 graph TD
     User([User]) -->|Asks Question| UI[Frontend: React + Vite on Vercel]
-    UI -->|POST /chat| API[Backend: FastAPI on Render]
+    UI -->|POST /chat with Query & History| API[Backend: FastAPI on Render]
     
     subgraph LangGraph RAG Agent
-        API -->|Query| Agent[LangGraph StateGraph]
+        API -->|Invoke Graph| Agent[LangGraph StateGraph]
         Agent --> Retriever[Retrieve Node]
         Agent --> Generator[Generate Node]
     end
@@ -60,20 +62,20 @@ graph TD
     HF -->|Vector| Qdrant[(Qdrant Vector DB)]
     Qdrant -->|Return Top-K Nodes| Retriever
     
-    Retriever -->|Pass Context| Generator
+    Retriever -->|Pass Context & Chat History| Generator
     Generator -->|Generate Analysis| Groq[Groq API: Llama-3.3-70b]
-    Groq -->|Return Answer| Generator
+    Groq -->|Return Answer + Source| Generator
     
     Generator -->|Final Response| API
-    API -->|Display Answer| UI
+    API -->|Render Citations via ReactMarkdown| UI
 ```
 
 ### How It Works:
-1. **Data Ingestion (Offline)**: PDF annual reports are processed via LlamaParse, vectorized using the `bge-m3` embedding model, and ingested into **Qdrant Cloud**.
-2. **Query Processing**: The user submits a natural language question via the React UI.
-3. **Retrieval**: The FastAPI backend receives the query. LangGraph routes the state to the `retrieve_node`, which hits the Qdrant database to find the 5 most relevant document chunks.
-4. **Generation**: The context is passed to the `generate_node`. The LLM (Llama-3.3-70B) is instructed with a strict system prompt to act as a Senior Corporate & Financial Analyst, citing specific numbers and strategies from the context.
-5. **Response**: The final AI response is streamed back to the frontend and rendered elegantly using markdown.
+1. **Data Ingestion (Offline)**: PDF annual reports are processed via LlamaParse, vectorized using the `bge-m3` embedding model, and ingested into **Qdrant Cloud** (Collection: `finrag_assistant`).
+2. **Query Processing**: The user submits a natural language question. The React UI bundles the current query along with previous chat session context (`chat_history`).
+3. **Retrieval**: The FastAPI backend receives the payload. LangGraph routes the state to the `retrieve_node`, which hits the Qdrant database to find the 5 most relevant document chunks and extracts their source filenames.
+4. **Generation**: The context and chat history are passed to the `generate_node`. The LLM (Llama-3.3-70B) is instructed to act as a Senior Analyst, strictly appending `[Source: Filename.pdf]` to its factual claims.
+5. **Response & UI Parsing**: The final AI response is streamed back to the frontend. A custom Markdown parser detects the citations and converts them into interactive, hoverable badges.
 
 ---
 
