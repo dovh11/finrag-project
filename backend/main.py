@@ -24,10 +24,10 @@ class ChatRequest(BaseModel):
 
 
 @app.post("/chat")
-def chat(request: ChatRequest):
+async def chat(request: ChatRequest):
     """Process a financial query through the RAG pipeline and return the analysis."""
     try:
-        result = graph.invoke({"query": request.query})
+        result = await graph.ainvoke({"query": request.query})
         return {"response": result["response"]}
     except Exception as e:
         error_msg = str(e)
