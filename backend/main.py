@@ -24,7 +24,7 @@ class ChatRequest(BaseModel):
 
 
 @app.post("/chat")
-async def chat(request: ChatRequest):
+def chat(request: ChatRequest):
     """Process a financial query through the RAG pipeline and return the analysis."""
     try:
         result = graph.invoke({"query": request.query})
