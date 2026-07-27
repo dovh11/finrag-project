@@ -16,7 +16,9 @@ import {
   MessageSquare,
   Menu,
   X,
-  Trash2
+  Trash2,
+  PanelLeftClose,
+  PanelLeftOpen
 } from 'lucide-react';
 
 const API_URL = 'https://finrag-backend-sdny.onrender.com/chat';
@@ -354,7 +356,7 @@ export default function App() {
             className="p-1.5 text-slate-500 hover:bg-slate-200 dark:hover:bg-surface-700 rounded-lg transition-colors"
             title="Close Sidebar"
           >
-            <Menu size={18} className="hidden lg:block" />
+            <PanelLeftClose size={18} className="hidden lg:block" />
             <X size={18} className="lg:hidden" />
           </button>
         </div>
@@ -412,10 +414,11 @@ export default function App() {
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-1.5 -ml-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-800 rounded-lg transition-colors"
+              className={`p-1.5 -ml-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-800 rounded-lg transition-colors ${isSidebarOpen ? 'lg:hidden' : ''}`}
               title="Toggle Sidebar"
             >
-              <Menu size={20} />
+              <PanelLeftOpen size={20} className="hidden lg:block" />
+              <Menu size={20} className="lg:hidden" />
             </button>
             <span className="text-sm font-medium text-slate-600 dark:text-slate-300 hidden sm:block truncate max-w-sm lg:max-w-xl">
               {chatSessions.find(s => s.id === currentSessionId)?.title || 'New Analysis'}
