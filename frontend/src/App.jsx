@@ -349,8 +349,13 @@ export default function App() {
             </div>
             <span className="font-semibold text-slate-900 dark:text-white">FinRAG</span>
           </div>
-          <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-1.5 text-slate-500 hover:bg-slate-200 dark:hover:bg-surface-700 rounded-lg">
-            <X size={18} />
+          <button 
+            onClick={() => setIsSidebarOpen(false)} 
+            className="p-1.5 text-slate-500 hover:bg-slate-200 dark:hover:bg-surface-700 rounded-lg transition-colors"
+            title="Close Sidebar"
+          >
+            <Menu size={18} className="hidden lg:block" />
+            <X size={18} className="lg:hidden" />
           </button>
         </div>
 
