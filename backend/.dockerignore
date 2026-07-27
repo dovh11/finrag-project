@@ -1,0 +1,20 @@
+# Environment variables
+.env
+
+# Python compilation files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Git
+.git
+.gitignore
+
+# Jupyter notebooks
+.ipynb_checkpoints/

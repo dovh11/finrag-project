@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+python-dotenv
+qdrant-client
+llama-index-core
+llama-index-vector-stores-qdrant
+llama-index-embeddings-huggingface
+langgraph
+langchain-groq

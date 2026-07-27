@@ -1,0 +1,152 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: #020617;
+  color: #e2e8f0;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.35);
+}
+
+/* ── Markdown Prose (inside AI messages) ── */
+.prose-ai h1,
+.prose-ai h2,
+.prose-ai h3,
+.prose-ai h4 {
+  color: #f1f5f9;
+  font-weight: 600;
+  margin-top: 1.25em;
+  margin-bottom: 0.5em;
+  line-height: 1.35;
+}
+.prose-ai h1 { font-size: 1.35rem; }
+.prose-ai h2 { font-size: 1.15rem; }
+.prose-ai h3 { font-size: 1.05rem; }
+
+.prose-ai p {
+  margin: 0.6em 0;
+  line-height: 1.7;
+  color: #cbd5e1;
+}
+
+.prose-ai strong {
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+.prose-ai ul,
+.prose-ai ol {
+  padding-left: 1.4em;
+  margin: 0.5em 0;
+}
+.prose-ai li {
+  margin: 0.3em 0;
+  line-height: 1.65;
+  color: #cbd5e1;
+}
+
+.prose-ai code {
+  background: rgba(99, 102, 241, 0.12);
+  color: #a5b4fc;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.88em;
+  font-family: 'Fira Code', 'Cascadia Code', monospace;
+}
+
+.prose-ai pre {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 8px;
+  padding: 1em;
+  overflow-x: auto;
+  margin: 0.75em 0;
+}
+.prose-ai pre code {
+  background: none;
+  padding: 0;
+  color: #e2e8f0;
+}
+
+/* ── Financial Tables ── */
+.prose-ai table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 0.88rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.prose-ai thead {
+  background: rgba(51, 129, 255, 0.12);
+}
+
+.prose-ai th {
+  padding: 0.7em 1em;
+  text-align: left;
+  font-weight: 600;
+  color: #93c5fd;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  white-space: nowrap;
+}
+
+.prose-ai td {
+  padding: 0.6em 1em;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.07);
+  color: #cbd5e1;
+}
+
+.prose-ai tbody tr:hover {
+  background: rgba(51, 129, 255, 0.06);
+}
+
+.prose-ai tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── Blockquotes ── */
+.prose-ai blockquote {
+  border-left: 3px solid #3381ff;
+  padding: 0.5em 1em;
+  margin: 0.75em 0;
+  background: rgba(51, 129, 255, 0.06);
+  border-radius: 0 6px 6px 0;
+  color: #94a3b8;
+}
+
+/* ── Horizontal rules ── */
+.prose-ai hr {
+  border: none;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  margin: 1.25em 0;
+}
