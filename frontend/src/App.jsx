@@ -12,7 +12,7 @@ import {
   MessageSquareText,
 } from 'lucide-react';
 
-const API_URL = 'http://localhost:8000/chat';
+const API_URL = 'https://finrag-backend.onrender.com/chat';
 
 const SUGGESTED_QUERIES = [
   'Phân tích doanh thu của FPT trong năm 2023',
