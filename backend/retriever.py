@@ -10,7 +10,7 @@ load_dotenv()
 from qdrant_client import QdrantClient
 from llama_index.core import Settings, VectorStoreIndex
 from llama_index.vector_stores.qdrant import QdrantVectorStore
-from llama_index.embeddings.huggingface import HuggingFaceInferenceAPIEmbedding
+from llama_index.embeddings.huggingface_api import HuggingFaceInferenceAPIEmbedding
 
 # Configure the embedding model globally using HF Inference API to save RAM
 Settings.embed_model = HuggingFaceInferenceAPIEmbedding(
