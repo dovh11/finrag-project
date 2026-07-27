@@ -28,7 +28,7 @@ def get_index():
     # Initialize the vector store and index
     vector_store = QdrantVectorStore(
         client=qdrant_client,
-        collection_name="finrag_fpt",
+        collection_name="finrag_assistant",
         enable_hybrid=False,
         fastembed_sparse_model=None,
     )
