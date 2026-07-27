@@ -19,15 +19,21 @@ app.add_middleware(
 )
 
 
+from typing import Optional, List, Dict
+
 class ChatRequest(BaseModel):
     query: str
+    chat_history: Optional[List[Dict[str, str]]] = []
 
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
     """Process a financial query through the RAG pipeline and return the analysis."""
     try:
-        result = await graph.ainvoke({"query": request.query})
+        result = await graph.ainvoke({
+            "query": request.query,
+            "chat_history": request.chat_history
+        })
         return {"response": result["response"]}
     except Exception as e:
         error_msg = str(e)

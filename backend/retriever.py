@@ -42,9 +42,15 @@ def retrieve_financial_context(query: str) -> str:
         query: The user's financial question or search query.
 
     Returns:
-        A single string of the top 5 retrieved nodes, concatenated with separators.
+        A single string of the top 5 retrieved nodes, concatenated with separators and sources.
     """
     retriever = get_index().as_retriever(similarity_top_k=5)
     nodes = retriever.retrieve(query)
-    context = "\n\n---\n\n".join([node.get_content() for node in nodes])
-    return context
+    
+    context_parts = []
+    for node in nodes:
+        source = node.metadata.get("file_name", "Unknown_Document")
+        content = node.get_content().strip()
+        context_parts.append(f"---\nSource: [{source}]\nContent: {content}\n---")
+        
+    return "\n\n".join(context_parts)

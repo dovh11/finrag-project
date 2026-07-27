@@ -75,7 +75,24 @@ function ChatBubble({ role, content }) {
           <p className="text-[0.94rem] leading-relaxed">{content}</p>
         ) : (
           <div className="prose-ai text-[0.94rem]">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+            <ReactMarkdown 
+              remarkPlugins={[remarkGfm]}
+              components={{
+                code({node, className, children, ...props}) {
+                  const content = String(children);
+                  if (content.startsWith('[Source:') && content.endsWith(']')) {
+                    return (
+                      <span className="inline-flex items-center rounded bg-slate-100 dark:bg-surface-700 px-1.5 py-0.5 text-[0.7rem] font-semibold text-slate-500 dark:text-slate-400 ml-1 border border-slate-200 dark:border-white/10 shadow-sm align-middle">
+                        📖 {content.replace(/\[Source:\s*|\]/g, '')}
+                      </span>
+                    );
+                  }
+                  return <code className={className} {...props}>{children}</code>;
+                }
+              }}
+            >
+              {content}
+            </ReactMarkdown>
           </div>
         )}
       </div>
@@ -186,6 +203,12 @@ export default function App() {
     const trimmed = (queryText ?? input).trim();
     if (!trimmed || isLoading) return;
 
+    // Build chat history excluding the current query
+    const chatHistory = messages.map((msg) => ({
+      role: msg.role === 'user' ? 'user' : 'assistant',
+      content: msg.content,
+    }));
+
     // Append user message
     const userMsg = { role: 'user', content: trimmed };
     setMessages((prev) => [...prev, userMsg]);
@@ -193,7 +216,10 @@ export default function App() {
     setIsLoading(true);
 
     try {
-      const { data } = await axios.post(API_URL, { query: trimmed });
+      const { data } = await axios.post(API_URL, { 
+        query: trimmed,
+        chat_history: chatHistory 
+      });
       const aiMsg = { role: 'ai', content: data.response };
       setMessages((prev) => [...prev, aiMsg]);
     } catch (err) {
