@@ -17,8 +17,7 @@ html {
 
 body {
   margin: 0;
-  background: #020617;
-  color: #e2e8f0;
+  @apply bg-surface-50 text-slate-900 dark:bg-[#020617] dark:text-[#e2e8f0] transition-colors duration-200;
 }
 
 /* ── Scrollbar ── */
@@ -29,11 +28,10 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
-  border-radius: 3px;
+  @apply bg-slate-300 dark:bg-slate-700/50 rounded-sm;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.35);
+  @apply bg-slate-400 dark:bg-slate-600/50;
 }
 
 /* ── Markdown Prose (inside AI messages) ── */
@@ -41,25 +39,18 @@ body {
 .prose-ai h2,
 .prose-ai h3,
 .prose-ai h4 {
-  color: #f1f5f9;
-  font-weight: 600;
-  margin-top: 1.25em;
-  margin-bottom: 0.5em;
-  line-height: 1.35;
+  @apply text-slate-900 dark:text-[#f1f5f9] font-semibold mt-5 mb-2 leading-snug;
 }
 .prose-ai h1 { font-size: 1.35rem; }
 .prose-ai h2 { font-size: 1.15rem; }
 .prose-ai h3 { font-size: 1.05rem; }
 
 .prose-ai p {
-  margin: 0.6em 0;
-  line-height: 1.7;
-  color: #cbd5e1;
+  @apply text-slate-700 dark:text-[#cbd5e1] my-2.5 leading-relaxed;
 }
 
 .prose-ai strong {
-  color: #f1f5f9;
-  font-weight: 600;
+  @apply text-slate-900 dark:text-[#f1f5f9] font-semibold;
 }
 
 .prose-ai ul,
@@ -68,32 +59,18 @@ body {
   margin: 0.5em 0;
 }
 .prose-ai li {
-  margin: 0.3em 0;
-  line-height: 1.65;
-  color: #cbd5e1;
+  @apply text-slate-700 dark:text-[#cbd5e1] my-1 leading-relaxed;
 }
 
 .prose-ai code {
-  background: rgba(99, 102, 241, 0.12);
-  color: #a5b4fc;
-  padding: 0.15em 0.4em;
-  border-radius: 4px;
-  font-size: 0.88em;
-  font-family: 'Fira Code', 'Cascadia Code', monospace;
+  @apply bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300 px-1.5 py-0.5 rounded text-[0.88em] font-mono;
 }
 
 .prose-ai pre {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  border-radius: 8px;
-  padding: 1em;
-  overflow-x: auto;
-  margin: 0.75em 0;
+  @apply bg-slate-100 border border-slate-200 dark:bg-[#0f172a]/70 dark:border-slate-400/10 rounded-lg p-4 my-3 overflow-x-auto;
 }
 .prose-ai pre code {
-  background: none;
-  padding: 0;
-  color: #e2e8f0;
+  @apply bg-transparent text-slate-800 dark:text-[#e2e8f0] p-0;
 }
 
 /* ── Financial Tables ── */
@@ -104,30 +81,28 @@ body {
   font-size: 0.88rem;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  @apply border border-slate-200 dark:border-slate-400/10;
 }
 
 .prose-ai thead {
-  background: rgba(51, 129, 255, 0.12);
+  @apply bg-brand-50 dark:bg-brand-500/10;
 }
 
 .prose-ai th {
   padding: 0.7em 1em;
   text-align: left;
   font-weight: 600;
-  color: #93c5fd;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
   white-space: nowrap;
+  @apply text-brand-700 dark:text-blue-300 border-b border-slate-200 dark:border-slate-400/15;
 }
 
 .prose-ai td {
   padding: 0.6em 1em;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.07);
-  color: #cbd5e1;
+  @apply text-slate-700 dark:text-slate-300 border-b border-slate-100 dark:border-slate-400/10;
 }
 
 .prose-ai tbody tr:hover {
-  background: rgba(51, 129, 255, 0.06);
+  @apply bg-brand-50/50 dark:bg-brand-500/5;
 }
 
 .prose-ai tbody tr:last-child td {
@@ -136,17 +111,14 @@ body {
 
 /* ── Blockquotes ── */
 .prose-ai blockquote {
-  border-left: 3px solid #3381ff;
   padding: 0.5em 1em;
   margin: 0.75em 0;
-  background: rgba(51, 129, 255, 0.06);
   border-radius: 0 6px 6px 0;
-  color: #94a3b8;
+  @apply border-l-4 border-brand-500 bg-brand-50 dark:bg-brand-500/10 text-slate-600 dark:text-slate-400;
 }
 
 /* ── Horizontal rules ── */
 .prose-ai hr {
   border: none;
-  border-top: 1px solid rgba(148, 163, 184, 0.12);
-  margin: 1.25em 0;
+  @apply border-t border-slate-200 dark:border-slate-400/15 my-5;
 }

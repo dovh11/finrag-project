@@ -10,15 +10,17 @@ import {
   Loader2,
   Sparkles,
   MessageSquareText,
+  Moon,
+  Sun
 } from 'lucide-react';
 
 const API_URL = 'https://finrag-backend.onrender.com/chat';
 
 const SUGGESTED_QUERIES = [
-  'Phân tích doanh thu của FPT trong năm 2023',
-  'So sánh biên lợi nhuận gộp qua các năm',
-  'Đánh giá cấu trúc tài sản và nợ phải trả',
-  'Phân tích dòng tiền từ hoạt động kinh doanh',
+  'Phân tích doanh thu của Vingroup trong năm 2025',
+  'So sánh biên lợi nhuận gộp của FPT và Vinamilk',
+  'Đánh giá tỷ lệ nợ xấu của MB Bank',
+  'Phân tích sản lượng và doanh thu của Hòa Phát',
 ];
 
 /* ─────────────────────────────────────────────
@@ -32,11 +34,11 @@ function TypingIndicator() {
         <Bot size={16} className="text-white" />
       </div>
       {/* Dots */}
-      <div className="bg-surface-800/80 border border-white/[0.06] rounded-2xl rounded-tl-sm px-5 py-3.5 flex items-center gap-1.5">
+      <div className="bg-white dark:bg-surface-800/80 border border-slate-200 dark:border-white/[0.06] rounded-2xl rounded-tl-sm px-5 py-3.5 flex items-center gap-1.5 shadow-sm dark:shadow-none">
         <span className="w-2 h-2 rounded-full bg-brand-400 animate-pulse-dot" style={{ animationDelay: '0s' }} />
         <span className="w-2 h-2 rounded-full bg-brand-400 animate-pulse-dot" style={{ animationDelay: '0.2s' }} />
         <span className="w-2 h-2 rounded-full bg-brand-400 animate-pulse-dot" style={{ animationDelay: '0.4s' }} />
-        <span className="ml-2 text-sm text-slate-400">Analyzing...</span>
+        <span className="ml-2 text-sm text-slate-500 dark:text-slate-400">Analyzing...</span>
       </div>
     </div>
   );
@@ -65,8 +67,8 @@ function ChatBubble({ role, content }) {
       <div
         className={`max-w-[75%] rounded-2xl px-5 py-3.5 ${
           isUser
-            ? 'bg-gradient-to-br from-emerald-600/90 to-teal-700/90 text-white rounded-tr-sm'
-            : 'bg-surface-800/80 border border-white/[0.06] text-slate-200 rounded-tl-sm'
+            ? 'bg-gradient-to-br from-emerald-600/90 to-teal-700/90 text-white rounded-tr-sm shadow-md'
+            : 'bg-white dark:bg-surface-800/80 border border-slate-200 dark:border-white/[0.06] text-slate-800 dark:text-slate-200 rounded-tl-sm shadow-sm dark:shadow-none'
         }`}
       >
         {isUser ? (
@@ -95,9 +97,9 @@ function WelcomeScreen({ onSuggestionClick }) {
         </div>
       </div>
 
-      <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">FinRAG Analyst</h1>
-      <p className="text-slate-400 text-center max-w-md mb-10 leading-relaxed">
-        AI-powered financial report analysis. Ask me anything about FPT's financial data — revenue, margins, cash flows, and more.
+      <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">FinRAG Analyst</h1>
+      <p className="text-slate-600 dark:text-slate-400 text-center max-w-md mb-10 leading-relaxed">
+        AI-powered financial report analysis. Ask me anything about top Vietnamese corporations' financial data.
       </p>
 
       {/* Suggestion cards */}
@@ -106,11 +108,11 @@ function WelcomeScreen({ onSuggestionClick }) {
           <button
             key={i}
             onClick={() => onSuggestionClick(q)}
-            className="group text-left px-4 py-3.5 rounded-xl border border-white/[0.06] bg-surface-800/50 hover:bg-surface-700/60 hover:border-brand-500/30 transition-all duration-200 cursor-pointer"
+            className="group text-left px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-surface-800/50 hover:bg-slate-50 dark:hover:bg-surface-700/60 hover:border-brand-500/30 transition-all duration-200 cursor-pointer shadow-sm dark:shadow-none"
           >
             <div className="flex items-start gap-2.5">
-              <Sparkles size={15} className="text-brand-400 mt-0.5 flex-shrink-0 opacity-60 group-hover:opacity-100 transition-opacity" />
-              <span className="text-sm text-slate-300 group-hover:text-white transition-colors leading-snug">{q}</span>
+              <Sparkles size={15} className="text-brand-500 dark:text-brand-400 mt-0.5 flex-shrink-0 opacity-60 group-hover:opacity-100 transition-opacity" />
+              <span className="text-sm text-slate-700 dark:text-slate-300 group-hover:text-brand-600 dark:group-hover:text-white transition-colors leading-snug">{q}</span>
             </div>
           </button>
         ))}
@@ -128,6 +130,47 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Theme State: Default to system theme if no preference is saved
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('finrag-theme');
+      if (saved) {
+        return saved === 'dark';
+      }
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
+
+  // Apply Theme class to HTML tag
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    // Listen for system theme changes if user hasn't explicitly overridden
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e) => {
+      const saved = localStorage.getItem('finrag-theme');
+      if (!saved) {
+        setIsDarkMode(e.matches);
+      }
+    };
+    
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+    localStorage.setItem('finrag-theme', newTheme ? 'dark' : 'light');
+  };
 
   // Auto-scroll to latest message
   useEffect(() => {
@@ -157,7 +200,7 @@ export default function App() {
       const errorMsg = {
         role: 'ai',
         content:
-          '⚠️ **Connection error.** Please make sure the FastAPI backend is running on `http://localhost:8000` and try again.',
+          '⚠️ **Connection error.** Please make sure the FastAPI backend is running and try again.',
       };
       setMessages((prev) => [...prev, errorMsg]);
     } finally {
@@ -182,21 +225,29 @@ export default function App() {
   const isEmpty = messages.length === 0;
 
   return (
-    <div className="h-screen flex flex-col bg-surface-900 overflow-hidden">
+    <div className="h-screen flex flex-col bg-surface-50 dark:bg-surface-900 transition-colors duration-200 overflow-hidden">
       {/* ── Header ── */}
-      <header className="flex-shrink-0 border-b border-white/[0.06] bg-surface-900/80 backdrop-blur-xl sticky top-0 z-20">
+      <header className="flex-shrink-0 border-b border-slate-200 dark:border-white/[0.06] bg-white/80 dark:bg-surface-900/80 backdrop-blur-xl sticky top-0 z-20">
         <div className="max-w-4xl mx-auto w-full flex items-center gap-3 px-5 py-3.5">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/20">
             <TrendingUp size={18} className="text-white" />
           </div>
           <div>
-            <h1 className="text-base font-semibold text-white leading-tight tracking-tight">FinRAG</h1>
+            <h1 className="text-base font-semibold text-slate-900 dark:text-white leading-tight tracking-tight">FinRAG</h1>
             <p className="text-xs text-slate-500">Financial AI Analyst</p>
           </div>
-          <div className="ml-auto flex items-center gap-2">
-            <span className="flex items-center gap-1.5 text-xs text-slate-500 bg-surface-800/60 px-2.5 py-1 rounded-full border border-white/[0.04]">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Llama 3.3 · 70B
+          <div className="ml-auto flex items-center gap-3">
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-800 rounded-lg transition-colors"
+              aria-label="Toggle theme"
+            >
+              {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <span className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-surface-800/60 px-2.5 py-1 rounded-full border border-slate-200 dark:border-white/[0.04]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+              Llama 3.3
             </span>
           </div>
         </div>
@@ -220,10 +271,10 @@ export default function App() {
       </main>
 
       {/* ── Input Bar ── */}
-      <footer className="flex-shrink-0 border-t border-white/[0.06] bg-surface-900/80 backdrop-blur-xl">
+      <footer className="flex-shrink-0 border-t border-slate-200 dark:border-white/[0.06] bg-white/80 dark:bg-surface-900/80 backdrop-blur-xl">
         <div className="max-w-4xl mx-auto w-full px-5 py-4">
-          <div className="flex items-end gap-3 bg-surface-800/70 border border-white/[0.08] rounded-2xl px-4 py-2.5 focus-within:border-brand-500/40 focus-within:shadow-lg focus-within:shadow-brand-500/5 transition-all duration-200">
-            <MessageSquareText size={20} className="text-slate-500 mb-1 flex-shrink-0" />
+          <div className="flex items-end gap-3 bg-white dark:bg-surface-800/70 border border-slate-300 dark:border-white/[0.08] rounded-2xl px-4 py-2.5 focus-within:border-brand-500/40 dark:focus-within:border-brand-500/40 focus-within:shadow-lg focus-within:shadow-brand-500/5 transition-all duration-200 shadow-sm dark:shadow-none">
+            <MessageSquareText size={20} className="text-slate-400 dark:text-slate-500 mb-1 flex-shrink-0" />
             <textarea
               ref={inputRef}
               id="chat-input"
@@ -231,9 +282,9 @@ export default function App() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask about FPT's financial reports..."
+              placeholder="Ask about financial reports..."
               disabled={isLoading}
-              className="flex-1 bg-transparent text-white text-[0.94rem] placeholder-slate-500 outline-none resize-none max-h-32 leading-relaxed disabled:opacity-50"
+              className="flex-1 bg-transparent text-slate-900 dark:text-white text-[0.94rem] placeholder-slate-400 dark:placeholder-slate-500 outline-none resize-none max-h-32 leading-relaxed disabled:opacity-50"
               style={{ minHeight: '1.7rem' }}
             />
             <button
@@ -249,7 +300,7 @@ export default function App() {
               )}
             </button>
           </div>
-          <p className="text-center text-[0.7rem] text-slate-600 mt-2.5">
+          <p className="text-center text-[0.7rem] text-slate-500 dark:text-slate-600 mt-2.5">
             FinRAG uses Llama 3.3 70B via Groq · Retrieval from Qdrant Cloud · Responses may contain inaccuracies
           </p>
         </div>
