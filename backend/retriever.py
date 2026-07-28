@@ -45,11 +45,11 @@ def get_index():
 def retrieve_financial_context(query: str) -> str:
     """Token-Optimized Two-Stage Retrieval with Cohere Reranking.
 
-    Stage 1 - Broad Net (top_k=20): Fetches 20 candidates via dense vector search to
+    Stage 1 - Broad Net (top_k=50): Fetches 50 candidates via dense vector search to
     prevent keyword blindness and ensure niche entities (Vinamilk, Hoa Phat, etc.) are captured.
 
-    Stage 2 - Fine Filter (top_n=3): Cohere's cross-encoder reranks candidates and keeps
-    only the 3 most strictly relevant chunks, preventing token bloat and Groq 429 rate limit errors.
+    Stage 2 - Fine Filter (top_n=4): Cohere's multilingual cross-encoder reranks candidates and keeps
+    only the 4 most strictly relevant chunks, preventing token bloat and Groq 429 rate limit errors.
 
     Includes a 3-attempt retry loop to handle HuggingFace Inference API cold start / 504 timeouts.
 
@@ -57,10 +57,10 @@ def retrieve_financial_context(query: str) -> str:
         query: The user's financial question or search query.
 
     Returns:
-        A single string of the top-3 reranked nodes, concatenated with separators and sources.
+        A single string of the top-4 reranked nodes, concatenated with separators and sources.
     """
     # Stage 1: Broad vector retrieval — cast a wide net
-    retriever = get_index().as_retriever(similarity_top_k=20)
+    retriever = get_index().as_retriever(similarity_top_k=50)
 
     max_attempts = 3
     last_exception = None
@@ -81,11 +81,12 @@ def retrieve_financial_context(query: str) -> str:
                 logger.error(f"All {max_attempts} retrieval attempts failed. Raising final exception.")
                 raise last_exception
 
-    # Stage 2: Cohere Rerank — precision filter to top 3 most relevant nodes
-    logger.info(f"Reranking {len(nodes)} candidates with Cohere Rerank (top_n=3)...")
+    # Stage 2: Cohere Rerank — precision filter to top 4 most relevant nodes
+    logger.info(f"Reranking {len(nodes)} candidates with Cohere Rerank (top_n=4, multilingual)...")
     cohere_rerank = CohereRerank(
         api_key=os.getenv("COHERE_API_KEY"),
-        top_n=3
+        top_n=4,
+        model="rerank-multilingual-v3.0"
     )
     reranked_nodes = cohere_rerank.postprocess_nodes(nodes, query_str=query)
     logger.info(f"Reranking complete. Passing {len(reranked_nodes)} nodes to the generator.")
