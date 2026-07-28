@@ -17,7 +17,6 @@ from qdrant_client import QdrantClient
 from llama_index.core import Settings, VectorStoreIndex
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from llama_index.embeddings.huggingface_api import HuggingFaceInferenceAPIEmbedding
-from llama_index.postprocessor.cohere_rerank import CohereRerank
 
 def get_index():
     # Configure the embedding model globally using HF Inference API
@@ -43,20 +42,19 @@ def get_index():
 
 
 def retrieve_financial_context(query: str) -> str:
-    """Two-stage retrieval with Cohere Reranking.
+    """Retrieve the top 5 most relevant financial document chunks for a given query.
 
-    Stage 1 (Broad Net): Fetches the top 25 candidates via vector similarity (HuggingFace bge-m3).
-    Stage 2 (Rerank): Filters down to the 5 most semantically relevant nodes using Cohere Rerank.
-    Includes a retry loop to handle HuggingFace Inference API cold start / 504 timeouts.
+    Uses a token-optimized top_k=5 to prevent context bloat while fully leveraging
+    the reasoning capabilities of Llama-3.3-70b. Includes a 3-attempt retry loop
+    to handle HuggingFace Inference API cold start / 504 timeouts.
 
     Args:
         query: The user's financial question or search query.
 
     Returns:
-        A single string of the top-5 reranked nodes, concatenated with separators and sources.
+        A single string of the top-5 retrieved nodes, concatenated with separators and sources.
     """
-    # Stage 1: Broad vector retrieval (cast a wide net)
-    retriever = get_index().as_retriever(similarity_top_k=25)
+    retriever = get_index().as_retriever(similarity_top_k=5)
 
     max_attempts = 3
     last_exception = None
@@ -77,17 +75,8 @@ def retrieve_financial_context(query: str) -> str:
                 logger.error(f"All {max_attempts} retrieval attempts failed. Raising final exception.")
                 raise last_exception
 
-    # Stage 2: Rerank with Cohere to find the most relevant 5 nodes
-    logger.info(f"Reranking {len(nodes)} candidates with Cohere Rerank (top_n=5)...")
-    cohere_rerank = CohereRerank(
-        api_key=os.getenv("COHERE_API_KEY"),
-        top_n=5
-    )
-    reranked_nodes = cohere_rerank.postprocess_nodes(nodes, query_str=query)
-    logger.info(f"Reranking complete. Returning {len(reranked_nodes)} nodes to the generator.")
-
     context_parts = []
-    for node in reranked_nodes:
+    for node in nodes:
         source = node.metadata.get("file_name", "Unknown_Document")
         content = node.get_content().strip()
         context_parts.append(f"---\nSource: [{source}]\nContent: {content}\n---")
