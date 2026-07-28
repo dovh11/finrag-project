@@ -42,7 +42,7 @@ def get_index():
 
 
 def retrieve_financial_context(query: str) -> str:
-    """Retrieve the top 15 relevant financial document chunks for a given query.
+    """Retrieve the top 8 relevant financial document chunks for a given query.
 
     Includes a retry loop to handle HuggingFace Inference API cold start / 504 timeouts.
 
@@ -50,9 +50,9 @@ def retrieve_financial_context(query: str) -> str:
         query: The user's financial question or search query.
 
     Returns:
-        A single string of the top 15 retrieved nodes, concatenated with separators and sources.
+        A single string of the top 8 retrieved nodes, concatenated with separators and sources.
     """
-    retriever = get_index().as_retriever(similarity_top_k=15)
+    retriever = get_index().as_retriever(similarity_top_k=8)
 
     max_attempts = 3
     last_exception = None
