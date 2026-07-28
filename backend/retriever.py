@@ -77,7 +77,10 @@ def retrieve_financial_context(query: str) -> str:
 
     context_parts = []
     for node in nodes:
-        source = node.metadata.get("file_name", "Unknown_Document")
+        source = node.metadata.get("file_name") or node.metadata.get("file_path") or "Financial Report"
+        if "/" in str(source):
+            source = str(source).split("/")[-1]
+        
         content = node.get_content().strip()
         context_parts.append(f"---\nSource: [{source}]\nContent: {content}\n---")
 

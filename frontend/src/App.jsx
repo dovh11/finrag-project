@@ -107,8 +107,18 @@ function ChatBubble({ role, content }) {
                 // Fallback for code block citations if the LLM sometimes uses them
                 code({node, className, children, ...props}) {
                   const contentStr = String(children);
-                  if (contentStr.startsWith('[Source:') && contentStr.endsWith(']')) {
-                    const docName = contentStr.replace(/\[Source:\s*|\]/g, '');
+                  let isCitation = false;
+                  let docName = '';
+                  
+                  if (contentStr.startsWith('[citation:') && contentStr.endsWith('](#citation)')) {
+                    isCitation = true;
+                    docName = contentStr.replace(/\[citation:\s*|\s*\]\(#citation\)/g, '');
+                  } else if (contentStr.startsWith('[Source:') && contentStr.endsWith(']')) {
+                    isCitation = true;
+                    docName = contentStr.replace(/\[Source:\s*|\]/g, '');
+                  }
+
+                  if (isCitation) {
                     return (
                       <span className="group relative inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 text-[0.7rem] font-semibold text-blue-700 dark:text-blue-300 ml-1 border border-blue-200 dark:border-blue-800/50 cursor-help transition-colors hover:bg-blue-100 dark:hover:bg-blue-900/50 align-middle">
                         📖 Source
