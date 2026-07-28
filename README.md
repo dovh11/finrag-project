@@ -35,9 +35,11 @@ The system currently hosts the complete annual reports of the following major co
 | **Complex Table Parsing** | Utilizes **LlamaParse** to accurately extract and preserve complex financial tables from raw PDF reports. |
 | **Agentic State Orchestration** | Employs **LangGraph** for intelligent routing, ensuring robust state management between retrieval and generation. |
 | **High-Performance Retrieval** | Uses **Qdrant Cloud** for blazing-fast vector similarity search, enabling instantaneous context fetching. |
+| **Two-Stage Retrieval + Reranking** | Fetches a broad pool of 25 candidates via vector search, then uses **Cohere Rerank** to precision-filter to the 5 most relevant chunks, eliminating context starvation in multi-doc comparisons. |
 | **Contextual Memory** | Maintains conversational state by passing `chat_history` to the backend, enabling fluid multi-turn dialogue. |
 | **Interactive Citations** | Automatically extracts and renders source document names as beautiful, hoverable UI badges to prevent AI hallucinations. |
 | **Rapid AI Inference** | Powered by the highly capable **Llama-3.3-70B-Versatile** model via **Groq's** ultra-fast API architecture. |
+| **Fault-Tolerant Retrieval** | A 3-attempt retry loop with a 20-second sleep gracefully handles HuggingFace Inference API cold starts (504 timeouts). |
 | **Memory-Optimized Deployment** | HuggingFace Inference API completely eliminates local PyTorch overhead, running easily within 512MB RAM constraints on Render. |
 | **Sleek ChatGPT-Style UI** | Modern frontend built with **React** and **Tailwind CSS**, featuring a collapsible chat session sidebar, dark mode, and rich markdown. |
 
@@ -60,7 +62,9 @@ graph TD
 
     Retriever -->|Embed Query| HF[HuggingFace API: BAAI/bge-m3]
     HF -->|Vector| Qdrant[(Qdrant Vector DB)]
-    Qdrant -->|Return Top-K Nodes| Retriever
+    Qdrant -->|Top-25 Candidates| Retriever
+    Retriever -->|Rerank Candidates| Cohere[Cohere Rerank API]
+    Cohere -->|Top-5 Relevant Nodes| Retriever
     
     Retriever -->|Pass Context & Chat History| Generator
     Generator -->|Generate Analysis| Groq[Groq API: Llama-3.3-70b]
@@ -71,9 +75,9 @@ graph TD
 ```
 
 ### How It Works:
-1. **Data Ingestion (Offline)**: PDF annual reports are processed via LlamaParse, vectorized using the `bge-m3` embedding model, and ingested into **Qdrant Cloud** (Collection: `finrag_assistant`).
+1. **Data Ingestion (Offline)**: PDF annual reports are processed via LlamaParse, vectorized using the `bge-m3` embedding model, and ingested into **Qdrant Cloud** (Collection: `finrag_assistant_v2`).
 2. **Query Processing**: The user submits a natural language question. The React UI bundles the current query along with previous chat session context (`chat_history`).
-3. **Retrieval**: The FastAPI backend receives the payload. LangGraph routes the state to the `retrieve_node`, which hits the Qdrant database to find the 5 most relevant document chunks and extracts their source filenames.
+3. **Retrieval (Two-Stage)**: LangGraph routes to `retrieve_node`. **Stage 1** hits Qdrant to fetch 25 broad candidates. **Stage 2** passes them through **Cohere Rerank** to precision-filter to the 5 most contextually relevant chunks across all companies, with a 3-attempt retry loop for HF API cold starts.
 4. **Generation**: The context and chat history are passed to the `generate_node`. The LLM (Llama-3.3-70B) is instructed to act as a Senior Analyst, strictly appending `[Source: Filename.pdf]` to its factual claims.
 5. **Response & UI Parsing**: The final AI response is streamed back to the frontend. A custom Markdown parser detects the citations and converts them into interactive, hoverable badges.
 
@@ -89,6 +93,7 @@ graph TD
 | **RAG Pipeline** | LlamaIndex | Core retrieval logic and vector store integration. |
 | **Vector DB** | Qdrant Cloud | Scalable cloud database for storing document embeddings. |
 | **Embeddings** | HuggingFace Inference API (`BAAI/bge-m3`) | Serverless generation of highly accurate text embeddings. |
+| **Reranking** | Cohere Rerank API | Cross-encoder reranking to select the most semantically relevant chunks. |
 | **LLM Provider** | Groq API (`llama-3.3-70b-versatile`) | Lightning-fast inference generation. |
 
 ---
@@ -98,7 +103,7 @@ graph TD
 ### Prerequisites
 - Python 3.10+
 - Node.js 18+
-- Accounts/API keys for **Groq**, **Qdrant Cloud**, and **HuggingFace**.
+- Accounts/API keys for **Groq**, **Qdrant Cloud**, **HuggingFace**, and **Cohere**.
 
 ### 1. Backend Setup
 
@@ -119,6 +124,7 @@ QDRANT_URL=your_qdrant_url
 QDRANT_API_KEY=your_qdrant_api_key
 GROQ_API_KEY=your_groq_api_key
 HF_TOKEN=your_huggingface_token
+COHERE_API_KEY=your_cohere_api_key
 ```
 
 ```bash
