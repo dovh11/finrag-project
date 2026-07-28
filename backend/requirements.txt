@@ -7,4 +7,3 @@ llama-index-vector-stores-qdrant
 llama-index-embeddings-huggingface-api
 langgraph
 langchain-groq
-llama-index-postprocessor-cohere-rerank
