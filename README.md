@@ -12,6 +12,10 @@
 - **Frontend App**: [https://finrag-assistant.vercel.app/](https://finrag-assistant.vercel.app/)
 - **Backend API Docs**: [https://finrag-backend-sdny.onrender.com/docs](https://finrag-backend-sdny.onrender.com/docs)
 
+<div align="center">
+  <img src="assets/finrag-ui-demo.png" alt="FinRAG Assistant Demo" width="100%">
+</div>
+
 ---
 
 ## 📖 Overview

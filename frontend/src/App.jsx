@@ -24,10 +24,10 @@ import {
 const API_URL = 'https://finrag-backend-sdny.onrender.com/chat';
 
 const SUGGESTED_QUERIES = [
-  'Định hướng chiến lược của Vingroup trong năm 2025',
-  'Phân tích kết quả kinh doanh của FPT và Vinamilk',
-  'Mục tiêu phát triển bền vững (ESG) của MB Bank',
-  'Tình hình sản xuất và doanh thu của Hòa Phát',
+  'Hãy cho tôi biết định hướng chiến lược của Vingroup trong năm 2025',
+  'Hãy phân tích cho tôi kết quả kinh doanh của FPT và Vinamilk năm 2025',
+  'Hãy cho tôi biết mục tiêu phát triển bền vững (ESG) của MB Bank năm 2025',
+  'Hãy phân tích cho tôi tình hình sản xuất và doanh thu của Hòa Phát năm 2025',
 ];
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
