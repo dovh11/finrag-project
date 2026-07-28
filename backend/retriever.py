@@ -28,7 +28,7 @@ def get_index():
     # Initialize the vector store and index
     vector_store = QdrantVectorStore(
         client=qdrant_client,
-        collection_name="finrag_assistant",
+        collection_name="finrag_assistant_v2",
         enable_hybrid=False,
         fastembed_sparse_model=None,
     )
@@ -44,7 +44,7 @@ def retrieve_financial_context(query: str) -> str:
     Returns:
         A single string of the top 5 retrieved nodes, concatenated with separators and sources.
     """
-    retriever = get_index().as_retriever(similarity_top_k=5)
+    retriever = get_index().as_retriever(similarity_top_k=15)
     nodes = retriever.retrieve(query)
     
     context_parts = []
